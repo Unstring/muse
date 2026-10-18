@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTrack(data, userId) {
+      return data.userId == userId &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+        data.artist is string && data.artist.size() > 0 && data.artist.size() <= 200 &&
+        data.streamUrl is string && data.streamUrl.size() > 0 && data.streamUrl.size() <= 2000 &&
+        (!('album' in data) || data.album is string) &&
+        (!('genre' in data) || data.genre is string) &&
+        (!('durationMs' in data) || data.durationMs is int) &&
+        (!('driveFileId' in data) || data.driveFileId is string) &&
+        (!('artworkUrl' in data) || data.artworkUrl is string) &&
+        (!('isFavorite' in data) || data.isFavorite is bool) &&
+        (!('playCount' in data) || data.playCount is int) &&
+        data.createdAt is timestamp && data.createdAt <= request.time &&
+        data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidPlaylist(data, userId) {
+      return data.userId == userId &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        (!('description' in data) || data.description is string) &&
+        (!('trackIds' in data) || data.trackIds is list) &&
+        (!('coverUrl' in data) || data.coverUrl is string) &&
+        data.createdAt is timestamp && data.createdAt <= request.time &&
+        data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId}/tracks/{trackId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidTrack(request.resource.data, userId);
+      allow update: if isOwner(userId) && isValidTrack(request.resource.data, userId);
+      allow delete: if isOwner(userId);
+    }
+
+    match /users/{userId}/playlists/{playlistId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidPlaylist(request.resource.data, userId);
+      allow update: if isOwner(userId) && isValidPlaylist(request.resource.data, userId);
+      allow delete: if isOwner(userId);
+    }
+  }
+}

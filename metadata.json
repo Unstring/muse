@@ -1,0 +1,6 @@
+{
+  "name": "CloudTunes",
+  "description": "Stream and play music seamlessly with Google Drive cloud integration, offline playback caching, Spotify-grade modern UI, and smart AI music assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "Track": {
+      "title": "Track",
+      "description": "User uploaded or saved music track with audio streaming URL and metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "album": { "type": "string" },
+        "genre": { "type": "string" },
+        "durationMs": { "type": "integer" },
+        "streamUrl": { "type": "string" },
+        "driveFileId": { "type": "string" },
+        "artworkUrl": { "type": "string" },
+        "isFavorite": { "type": "boolean" },
+        "playCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "artist", "streamUrl", "createdAt", "updatedAt"]
+    },
+    "Playlist": {
+      "title": "Playlist",
+      "description": "User created music playlist",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "trackIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "coverUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/tracks/{trackId}": {
+      "schema": "Track",
+      "description": "User-owned music tracks collection"
+    },
+    "/users/{userId}/playlists/{playlistId}": {
+      "schema": "Playlist",
+      "description": "User-owned custom playlists"
+    }
+  }
+}
